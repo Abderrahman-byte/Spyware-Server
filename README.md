@@ -5,11 +5,11 @@ and save them to the database.
 
 ## Tasks :
 
-    - [ ] Open Server socket (linux and windows compatiblity)
-    - [ ] Create a messaging structure
-    - [ ] Maybe Use TLS
-    - [ ] Add Authentication
-    - [ ] Save sent data to database
+- [ ] Open Server socket (linux and windows compatiblity)
+- [ ] Create a messaging structure
+- [ ] Maybe Use TLS
+- [ ] Add Authentication
+- [ ] Save sent data to database
 
 ## Author :
 
