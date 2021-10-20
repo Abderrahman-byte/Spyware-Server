@@ -1,13 +1,12 @@
-import os, json
 import psycopg2 as pg
 
-from .common import get_config
+from spyware_server_common.config import get_config
 
 def add_extensions (cursor) :
     sql_statement = 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
-
     cursor.execute(sql_statement)
     cursor.connection.commit()
+
     print ("[*] Added extensions")
 
 # Create table for authentication
@@ -47,5 +46,5 @@ def initDb (*args):
     create_access_table(cursor) # Create access table
     create_target_table(cursor) # create target table
 
-    # cursor.close()
+    cursor.close()
     connection.close()

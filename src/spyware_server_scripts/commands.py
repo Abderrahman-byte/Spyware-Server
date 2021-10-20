@@ -1,4 +1,5 @@
 from .init_db import initDb
+from .add_access import add_access
 
 class Command :
     def __init__(self, name :str, description: str, callback : callable) :
@@ -13,3 +14,4 @@ class Command :
 commands_list = []
 
 commands_list.append(Command("init-db", "Initialize database tables", initDb))
+commands_list.append(Command("add-access", "Add credentials access", add_access))
