@@ -13,12 +13,16 @@ def main () :
     amqpConnection = openAmqpConnection(rmqConfig)
     mainChannel = amqpConnection.channel()
     
-    initQueues(amqpConnection)
+    try :
+        initQueues(amqpConnection)
 
-    mainChannel.basic_qos(prefetch_count=1)
-    mainChannel.basic_consume('auth', create_authentication_callback(pgCursor))
+        mainChannel.basic_qos(prefetch_count=1)
+        mainChannel.basic_consume('auth', create_authentication_callback(pgCursor))
 
-    mainChannel.start_consuming()
+        mainChannel.start_consuming()
+    except KeyboardInterrupt :
+        pgConnection.close()
+        amqpConnection.close()
 
 if __name__ == '__main__' :
     main()
