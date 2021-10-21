@@ -5,10 +5,10 @@ and save them to the database.
 
 ## Tasks :
 
-- [ ] Open Server socket (linux and windows compatiblity)
-- [ ] Create a messaging structure
-- [ ] Maybe Use TLS
-- [ ] Add Authentication
+- [x] Consum messages from broker
+- [x] Add Authentication
+- [ ] Receive target info and create target based on its info fingerprint
+- [ ] keylogs buffers and save them to a database or a file
 - [ ] Save sent data to database
 
 ## Author :
