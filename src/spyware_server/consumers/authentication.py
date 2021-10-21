@@ -16,6 +16,15 @@ def validate_authentication_message (data) :
 
     return True
 
+def send_rpc_error_reply (ch, method, properties, error_title) :
+    return_payload = json.dumps({ 'error': error_title })
+    ch.basic_publish(exchange='', routing_key=properties.reply_to, body=return_payload)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
+
+def send_rpc_reply (ch, method, properties, body) :
+    ch.basic_publish(exchange='', routing_key=properties.reply_to, body=body)
+    ch.basic_ack(delivery_tag=method.delivery_tag)  
+
 def create_authentication_callback (cursor) :
     def callback (ch, method, properties, body) :
         data = None
@@ -24,13 +33,11 @@ def create_authentication_callback (cursor) :
         try :
             data = json.loads(body.decode())
         except :
-            print('invalid_body')
-            ch.basic_ack(delivery_tag=method.delivery_tag)  
+            send_rpc_error_reply(ch, method, properties, 'invalid_body')
             return  
 
         if not validate_authentication_message(data) :
-            print('invalid_format')
-            ch.basic_ack(delivery_tag=method.delivery_tag) 
+            send_rpc_error_reply(ch, method, properties, 'invalid_schema')
             return 
 
         username = data['username']
@@ -39,14 +46,11 @@ def create_authentication_callback (cursor) :
         access_data = get_access_by_username(cursor, username)
 
         if access_data is None or not checkHash(access_data['password'], password):
-            print('invalid_credentials')
-            ch.basic_ack(delivery_tag=method.delivery_tag) 
+            send_rpc_error_reply(ch, method, properties, 'invalid_credentials')
             return
 
         token = jwt.encode({'username': username}, config.get('secrect', '123456'))
         return_payload = json.dumps({ 'token': token })
-        ch.basic_publish(exchange='', routing_key=properties.reply_to, body=return_payload)
-
-        ch.basic_ack(delivery_tag=method.delivery_tag)  
+        send_rpc_reply (ch, method, properties, return_payload)
 
     return callback
