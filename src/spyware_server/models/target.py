@@ -8,8 +8,11 @@ def create_target (cursor, *args) :
     VALUES (%s, %s, %s, %s) RETURNING *'''
     try :
         cursor.execute(sql_statement, args)
-        return cursor.fetchone()
-    except :
+        data = cursor.fetchone()
+        cursor.connection.commit()
+        return data
+    except Exception as ex:
+        print('[ERROR] create_target : ' + ex.__str__())
         return None
 
 
