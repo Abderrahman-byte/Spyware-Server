@@ -26,9 +26,10 @@ def create_access_table (cursor) :
 # Create table to store data about target
 def create_target_table (cursor) :
     sql_statement = '''CREATE TABLE IF NOT EXISTS "target" (
-        id UUID PRIMARY KEY default uuid_generate_v4(),
+        fp VARCHAR(40) PRIMARY KEY,
         os_name VARCHAR NOT NULL,
-        os_version_release VARCHAR NOT NULL,
+        nodename VARCHAR NOT NULL,
+        username VARCHAR NOT NULL,
         added_date TIMESTAMP DEFAULT NOW()
     );'''
 

