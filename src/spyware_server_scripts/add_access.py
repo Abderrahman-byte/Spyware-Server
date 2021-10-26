@@ -29,8 +29,8 @@ def add_access (*args) :
     if len (args) == 2 : config = get_config()
     else : config = get_config(*args)
 
-    username = args[1]
-    password = args[2]
+    username = args[-2]
+    password = args[-1]
 
     connection = pg.connect(**config["db"])
     cursor = connection.cursor()
