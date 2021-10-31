@@ -1,3 +1,4 @@
+import os
 import bcrypt, hashlib
 
 def hashStr (text) : 
@@ -15,3 +16,12 @@ def sha256(text) :
     hashFunc = hashlib.sha256()
     hashFunc.update(text)
     return hashFunc.hexdigest()
+
+def createFolderIfNotExists (folder_name) :
+    if not os.path.exists(folder_name) :
+        os.mkdir(folder_name)
+
+def appendToFile (filename, data) :
+    with open(filename, 'a') as fileStream :
+        fileStream.write(data)
+        fileStream.write('\n')
