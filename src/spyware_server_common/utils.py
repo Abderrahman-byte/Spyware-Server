@@ -1,4 +1,4 @@
-import os
+import os, random
 import bcrypt, hashlib
 
 def hashStr (text) : 
@@ -25,3 +25,8 @@ def appendToFile (filename, data) :
     with open(filename, 'a') as fileStream :
         fileStream.write(data)
         fileStream.write('\n')
+
+def generate_random(len) :
+    chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+
+    return "".join([random.choice(chars) for _ in range(len)])

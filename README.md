@@ -11,6 +11,7 @@ and save them to the database.
 - [x] keylogs buffers and save them to a database or a file
 - [x] Save sent data to database
 - [ ] Save screen shots
+- [ ] Create thread to fetch screen shots and save them
 
 ## Author :
 

