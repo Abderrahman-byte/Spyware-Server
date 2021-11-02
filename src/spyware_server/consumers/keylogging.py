@@ -27,7 +27,7 @@ def create_keylogging_callback (cursor):
         payload = data.get('payload')
 
         try :
-            tokenData = jwt.decode(token.encode(), config.get('secrect', '123456'), algorithms=["HS256"])
+            tokenData = jwt.decode(token.encode(), config.get('secret', '123456'), algorithms=["HS256"])
         except Exception as ex:
             return
 

